@@ -837,28 +837,42 @@ export const MLBPlayerDetail: React.FC = () => {
                       ))
                     ) : (
                       // 타자 타석별 기록
-                      gamePlayByPlay.map((atBat, idx) => (
-                        <div key={idx} className="bg-white rounded-lg p-3 border border-gray-200">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <span className="font-bold text-gray-900">
-                                {atBat.inning}회 {atBat.halfInning}
-                              </span>
-                              <span className="ml-2 text-gray-900 font-medium">
-                                {atBat.result}
-                              </span>
-                              {atBat.rbi > 0 && (
-                                <span className="ml-2 text-green-600 font-semibold">
-                                  ({atBat.rbi}타점)
-                                </span>
-                              )}
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              vs {atBat.pitcher}
+                      gamePlayByPlay.map((atBat, idx) => {
+                        // result에서 방향 정보 분리
+                        const resultParts = atBat.result ? atBat.result.match(/^([^(]+)(\(.+\))?$/) : null;
+                        const mainResult = resultParts ? resultParts[1].trim() : atBat.result;
+                        const direction = resultParts && resultParts[2] ? resultParts[2].trim() : null;
+                        
+                        return (
+                          <div key={idx} className="bg-white rounded-lg p-3 border border-gray-200">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div>
+                                  <span className="font-bold text-gray-900">
+                                    {atBat.inning}회 {atBat.halfInning}
+                                  </span>
+                                  <span className="ml-2 text-gray-900 font-medium">
+                                    {mainResult}
+                                  </span>
+                                  {atBat.rbi > 0 && (
+                                    <span className="ml-2 text-green-600 font-semibold">
+                                      ({atBat.rbi}타점)
+                                    </span>
+                                  )}
+                                </div>
+                                {direction && (
+                                  <div className="text-sm text-gray-500 mt-1">
+                                    {direction}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                vs {atBat.pitcher}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))
+                        );
+                      })
                     )}
                   </div>
                 </div>

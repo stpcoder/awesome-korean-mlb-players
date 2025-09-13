@@ -712,11 +712,11 @@ export const MLBScheduleEnhanced: React.FC = () => {
                       className={`p-4 ${isClickable ? 'cursor-pointer hover:bg-gray-50' : ''}`}
                       onClick={() => isClickable && fetchGamePerformance(game, ourPlayers.map(p => p.mlbId))}
                     >
-                      <div className="flex flex-col gap-3">
-                        {/* 팀 매치업과 점수 및 시간 */}
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                      <div className="flex gap-3">
+                        {/* 왼쪽: 팀 정보와 선수 태그 */}
+                        <div className="flex-1 flex flex-col gap-3">
                           {/* 팀과 점수 - 그리드로 정렬 */}
-                          <div className="flex items-center justify-center flex-1">
+                          <div className="flex items-center justify-center">
                             <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-3 w-full max-w-lg">
                               {/* 원정팀 - 우측 정렬 */}
                               <div className="flex items-center gap-1 sm:gap-1.5 justify-end">
@@ -763,45 +763,44 @@ export const MLBScheduleEnhanced: React.FC = () => {
                             </div>
                           </div>
                           
-                          {/* 시간 및 상태 - 우측 정렬 또는 하단 */}
-                          <div className="flex items-center gap-2 justify-center sm:justify-end">
-                            <span className="text-xs sm:text-sm text-gray-600">
-                              {game.koreanDateString?.split(' ').slice(-2).join(' ') || 
-                               new Date(game.gameDate).toLocaleTimeString('ko-KR', { 
-                                 hour: 'numeric', 
-                                 minute: '2-digit',
-                                 hour12: true,
-                                 timeZone: 'Asia/Seoul'
-                               })}
-                            </span>
-                            {getStatusBadge(game.gameStatus)}
+                          {/* 선수 태그 - 중앙 정렬 */}
+                          <div className="flex flex-wrap items-center gap-2 justify-center">
+                            {ourPlayers.map(player => {
+                              const playerIsHome = homePlayers.some(p => p.id === player.id);
+                              return (
+                                <button
+                                  key={player.id}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigate(`/player/${player.id}`);
+                                  }}
+                                  className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full transition-colors text-xs sm:text-sm"
+                                >
+                                  <span className="font-semibold">
+                                    {player.name}
+                                  </span>
+                                  <span className="text-xs opacity-75">
+                                    {playerIsHome ? '홈' : '원정'}
+                                  </span>
+                                </button>
+                              );
+                            })}
                           </div>
                         </div>
                         
-                        {/* 선수 태그 */}
-                        <div className="flex flex-wrap items-center gap-2 justify-center">
-                          {ourPlayers.map(player => {
-                            const playerIsHome = homePlayers.some(p => p.id === player.id);
-                            return (
-                              <button
-                                key={player.id}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  navigate(`/player/${player.id}`);
-                                }}
-                                className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full transition-colors text-xs sm:text-sm"
-                              >
-                                <span className="font-semibold">
-                                  {player.name}
-                                </span>
-                                <span className="text-xs opacity-75">
-                                  {playerIsHome ? '홈' : '원정'}
-                                </span>
-                              </button>
-                            );
-                          })}
+                        {/* 오른쪽: 시간 및 상태 - 세로 중앙 정렬 */}
+                        <div className="flex flex-col items-end justify-center gap-2">
+                          <span className="text-xs sm:text-sm text-gray-600">
+                            {game.koreanDateString?.split(' ').slice(-2).join(' ') || 
+                             new Date(game.gameDate).toLocaleTimeString('ko-KR', { 
+                               hour: 'numeric', 
+                               minute: '2-digit',
+                               hour12: true,
+                               timeZone: 'Asia/Seoul'
+                             })}
+                          </span>
+                          {getStatusBadge(game.gameStatus)}
                         </div>
-                        
                       </div>
                     </div>
                   </div>
