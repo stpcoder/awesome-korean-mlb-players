@@ -169,7 +169,7 @@ function Layout({ children }: { children: React.ReactNode }) {
 
 function App() {
   return (
-    <Router>
+    <Router basename="/awesome-korean-mlb-players">
       <Routes>
         <Route path="/" element={<Layout><PlayersPage /></Layout>} />
         <Route path="/schedule" element={<Layout><SchedulePage /></Layout>} />
