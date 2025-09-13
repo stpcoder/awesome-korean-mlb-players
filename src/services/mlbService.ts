@@ -635,10 +635,19 @@ class MLBService {
       // 각 선수의 이닝별 기록 가져오기
       for (const player of playersInGame) {
         logger.log(`[getKoreanPlayersInGame] Getting inning stats for ${player.playerName} (${player.playerId})`);
+        
+        // 타자 이닝별 기록
         if (player.played && player.batting) {
           const inningStats = await this.getPlayerInningStats(gamePk, player.playerId);
-          logger.log(`[getKoreanPlayersInGame] Inning stats for ${player.playerName}:`, inningStats);
+          logger.log(`[getKoreanPlayersInGame] Batting inning stats for ${player.playerName}:`, inningStats);
           (player as any).inningStats = inningStats;
+        }
+        
+        // 투수 이닝별 기록
+        if (player.played && player.pitching) {
+          const pitcherInningDetails = await this.getPitcherInningDetails(gamePk, player.playerId);
+          logger.log(`[getKoreanPlayersInGame] Pitcher inning details for ${player.playerName}:`, pitcherInningDetails);
+          (player as any).pitcherInningDetails = pitcherInningDetails;
         }
       }
       
@@ -677,9 +686,16 @@ class MLBService {
   // 투수 이닝별 상세 정보 가져오기
   async getPitcherInningDetails(gameId: number, playerId: number) {
     try {
-      const response = await fetch(
-        getApiUrl(`/game/${gameId}/playByPlay`)
-      );
+      const url = getApiUrl(`/game/${gameId}/playByPlay`);
+      logger.log(`[getPitcherInningDetails] Fetching from: ${url} for pitcher ${playerId}`);
+      
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        logger.error(`[getPitcherInningDetails] Failed to fetch playByPlay: ${response.status}`);
+        return [];
+      }
+      
       const data = await response.json();
       
       if (!data.allPlays) return [];
@@ -767,12 +783,23 @@ class MLBService {
   // 선수별 이닝 기록 가져오기
   async getPlayerInningStats(gameId: number, playerId: number) {
     try {
-      const response = await fetch(
-        getApiUrl(`/game/${gameId}/playByPlay`)
-      );
-      const data = await response.json();
+      const url = getApiUrl(`/game/${gameId}/playByPlay`);
+      logger.log(`[getPlayerInningStats] Fetching from: ${url} for player ${playerId}`);
       
-      if (!data.allPlays) return [];
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        logger.error(`[getPlayerInningStats] Failed to fetch playByPlay: ${response.status}`);
+        return [];
+      }
+      
+      const data = await response.json();
+      logger.log(`[getPlayerInningStats] Got playByPlay data, allPlays count: ${data.allPlays?.length || 0}`);
+      
+      if (!data.allPlays) {
+        logger.warn('[getPlayerInningStats] No allPlays data available');
+        return [];
+      }
       
       const inningStats: any[] = [];
       
@@ -792,9 +819,10 @@ class MLBService {
         }
       });
       
+      logger.log(`[getPlayerInningStats] Found ${inningStats.length} at-bats for player ${playerId}`);
       return inningStats;
     } catch (error) {
-      logger.error(`Error fetching player inning stats:`, error);
+      logger.error(`[getPlayerInningStats] Error fetching player inning stats for player ${playerId}:`, error);
       return [];
     }
   }

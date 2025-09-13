@@ -400,13 +400,27 @@ export const MLBScheduleEnhanced: React.FC = () => {
       logger.log('Fetched boxscore:', boxscoreData);
       setGameBoxscore(boxscoreData);
       
-      // 이닝별 플레이 기록 가져오기
-      const liveFeed = await mlbService.getGameLiveFeed(game.gamePk);
-      logger.log('Fetched live feed:', liveFeed);
+      // 이닝별 플레이 기록 가져오기 (실패해도 계속 진행)
+      let liveFeed = null;
+      try {
+        liveFeed = await mlbService.getGameLiveFeed(game.gamePk);
+        logger.log('Fetched live feed:', liveFeed);
+      } catch (liveFeedError) {
+        logger.error('Failed to fetch live feed, continuing without it:', liveFeedError);
+      }
       setGameLiveFeed(liveFeed);
       
       // 한국 선수의 이닝별 타석 결과 추가
+      // 이미 getKoreanPlayersInGame에서 inningStats를 가져왔으므로, 
+      // liveFeed에서 추가 정보가 있을 때만 보완
       const performancesWithInningStats = performances.map(perf => {
+        // 이미 inningStats가 있으면 그대로 사용
+        if ((perf as any).inningStats && (perf as any).inningStats.length > 0) {
+          logger.log(`Using existing inning stats for ${perf.playerName}:`, (perf as any).inningStats);
+          return perf;
+        }
+        
+        // inningStats가 없고 liveFeed가 있으면 liveFeed에서 가져오기
         const inningStats: any[] = [];
         
         if (liveFeed?.liveData?.plays?.allPlays) {
@@ -422,6 +436,8 @@ export const MLBScheduleEnhanced: React.FC = () => {
             }
           });
         }
+        
+        logger.log(`Created inning stats from liveFeed for ${perf.playerName}:`, inningStats);
         
         return {
           ...perf,
