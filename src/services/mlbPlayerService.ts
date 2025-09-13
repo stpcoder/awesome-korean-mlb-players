@@ -35,7 +35,12 @@ const SPORT_LEVEL_MAP: Record<number, string> = {
 export async function fetchPlayerInfo(mlbId: number): Promise<DynamicPlayerInfo | null> {
   try {
     // 1. 선수 기본 정보 가져오기
-    const response = await fetch(`/api/mlb/people/${mlbId}?hydrate=currentTeam,team`);
+    const isDevelopment = import.meta.env.DEV;
+    const url = isDevelopment 
+      ? `/api/mlb/people/${mlbId}?hydrate=currentTeam,team`
+      : `https://awesome-korean-mlb-players.vercel.app/api/mlb-proxy?url=${encodeURIComponent(`https://statsapi.mlb.com/api/v1/people/${mlbId}?hydrate=currentTeam,team`)}`;
+    
+    const response = await fetch(url);
     const data = await response.json();
     
     if (!data.people || data.people.length === 0) {

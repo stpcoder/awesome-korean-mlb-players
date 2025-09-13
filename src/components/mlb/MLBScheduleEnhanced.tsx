@@ -394,7 +394,7 @@ export const MLBScheduleEnhanced: React.FC = () => {
       const isDevelopment = import.meta.env.DEV;
       const boxscoreUrl = isDevelopment 
         ? `/api/mlb/api/v1/game/${game.gamePk}/boxscore`
-        : `/api/mlb-proxy?url=${encodeURIComponent(`https://statsapi.mlb.com/api/v1/game/${game.gamePk}/boxscore`)}`;
+        : `https://awesome-korean-mlb-players.vercel.app/api/mlb-proxy?url=${encodeURIComponent(`https://statsapi.mlb.com/api/v1/game/${game.gamePk}/boxscore`)}`;
       const boxscoreResponse = await fetch(boxscoreUrl);
       const boxscoreData = await boxscoreResponse.json();
       logger.log('Fetched boxscore:', boxscoreData);
