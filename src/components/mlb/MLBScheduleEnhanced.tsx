@@ -859,8 +859,6 @@ export const MLBScheduleEnhanced: React.FC = () => {
                 </div>
                 <div className="text-sm text-gray-500 my-1">vs</div>
                 <div className="flex items-center justify-center gap-2">
-                  <span className="text-xl font-bold text-gray-900">{selectedGame.teams.home.score}</span>
-                  <span className="font-semibold text-sm">{getKoreanTeamName(selectedGame.teams.home.team.name)}</span>
                   <img 
                     src={mlbService.getTeamLogoUrl(selectedGame.teams.home.team.id)} 
                     alt={selectedGame.teams.home.team.name}
@@ -869,6 +867,8 @@ export const MLBScheduleEnhanced: React.FC = () => {
                       e.currentTarget.style.display = 'none';
                     }}
                   />
+                  <span className="font-semibold text-sm">{getKoreanTeamName(selectedGame.teams.home.team.name)}</span>
+                  <span className="text-xl font-bold text-gray-900">{selectedGame.teams.home.score}</span>
                 </div>
               </div>
               {/* 데스크톱 레이아웃 */}
@@ -1321,7 +1321,7 @@ export const MLBScheduleEnhanced: React.FC = () => {
                                   )}
                                 </div>
                                 {inning.description && inning.description.includes('(') && (
-                                  <span className="text-gray-500 text-xs block sm:inline">
+                                  <span className="text-gray-500 text-xs block">
                                     {inning.description.match(/\([^)]*\)/)?.[0]}
                                   </span>
                                 )}
