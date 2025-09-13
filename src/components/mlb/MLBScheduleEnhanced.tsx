@@ -236,12 +236,18 @@ export const MLBScheduleEnhanced: React.FC = () => {
         setFutureDaysLoaded(futureDaysLoaded + 7);
       }
       
-      // MLB API 직접 호출
+      // MLB API 호출 (프록시 사용)
       const sportIds = '1,11,12,13,14,15,16'; // 모든 레벨 포함
-      let url = `https://statsapi.mlb.com/api/v1/schedule?sportId=${sportIds}&startDate=${startDate}&endDate=${endDate}`;
+      let apiPath = `/schedule?sportId=${sportIds}&startDate=${startDate}&endDate=${endDate}`;
       if (teamIds && teamIds.length > 0) {
-        url += `&teamId=${teamIds.join(',')}`;
+        apiPath += `&teamId=${teamIds.join(',')}`;
       }
+      
+      // 프로덕션 환경에서는 프록시 사용
+      const isDevelopment = import.meta.env.DEV;
+      const url = isDevelopment 
+        ? `/api/mlb/api/v1${apiPath}`
+        : `/api/mlb-proxy?url=${encodeURIComponent(`https://statsapi.mlb.com/api/v1${apiPath}`)}`;
       
       const response = await fetch(url);
       const data = await response.json();

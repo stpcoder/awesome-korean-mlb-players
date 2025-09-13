@@ -1,8 +1,21 @@
 // MLB Stats API 서비스
 // 공식 무료 API - 제한 없음!
 
-// Vite 프록시를 통해 CORS 우회
-const MLB_API_BASE = '/api/mlb/api/v1';
+// 환경에 따라 API 경로 설정
+const isDevelopment = import.meta.env.DEV;
+const MLB_API_BASE = isDevelopment 
+  ? '/api/mlb/api/v1'  // 개발 환경: Vite 프록시 사용
+  : 'https://statsapi.mlb.com/api/v1';  // 프로덕션: 직접 호출
+
+// 프로덕션 환경에서 프록시 사용을 위한 헬퍼 함수
+function getApiUrl(path: string): string {
+  if (isDevelopment) {
+    return `${MLB_API_BASE}${path}`;
+  }
+  // 프로덕션에서는 Vercel 프록시 함수 사용
+  const fullUrl = `https://statsapi.mlb.com/api/v1${path}`;
+  return `/api/mlb-proxy?url=${encodeURIComponent(fullUrl)}`;
+}
 
 export interface MLBPlayer {
   id: number;
@@ -95,7 +108,7 @@ class MLBService {
   async getPlayerInfo(playerId: number) {
     try {
       // 먼저 기본 선수 정보 조회
-      const response = await fetch(`${MLB_API_BASE}/people/${playerId}?hydrate=currentTeam,team(league)`);
+      const response = await fetch(getApiUrl(`/people/${playerId}?hydrate=currentTeam,team(league)`));
       const data = await response.json();
       
       if (data.people && data.people.length > 0) {
@@ -109,7 +122,7 @@ class MLBService {
         if (!teamInfo) {
           // 현재 시즌 stats 조회 (마이너리그 포함)
           const currentYear = new Date().getFullYear();
-          const statsResponse = await fetch(`${MLB_API_BASE}/people/${playerId}/stats?stats=gameLog&season=${currentYear}&sportIds=1,11,12,13,14,15,16`);
+          const statsResponse = await fetch(getApiUrl(`/people/${playerId}/stats?stats=gameLog&season=${currentYear}&sportIds=1,11,12,13,14,15,16`));
           const statsData = await statsResponse.json();
           
           if (statsData.stats && statsData.stats.length > 0 && statsData.stats[0].splits && statsData.stats[0].splits.length > 0) {
@@ -218,7 +231,7 @@ class MLBService {
   // 선수 기본 정보 가져오기
   async getPlayer(playerId: number): Promise<MLBPlayer | null> {
     try {
-      const response = await fetch(`${MLB_API_BASE}/people/${playerId}`);
+      const response = await fetch(getApiUrl(`/people/${playerId}`));
       const data = await response.json();
       return data.people?.[0] || null;
     } catch (error) {
@@ -231,18 +244,18 @@ class MLBService {
   async getPlayerStats(playerId: number, season: number = 2025, sportId?: number): Promise<MLBPlayerStats | null> {
     try {
       // sportId가 제공된 경우 (마이너리그) 해당 리그 통계 사용
-      let url = `${MLB_API_BASE}/people/${playerId}/stats?stats=season&season=${season}&gameType=R`;
+      let path = `/people/${playerId}/stats?stats=season&season=${season}&gameType=R`;
       if (sportId) {
-        url += `&sportId=${sportId}`;
+        path += `&sportId=${sportId}`;
       }
       
-      let response = await fetch(url);
+      let response = await fetch(getApiUrl(path));
       let data = await response.json();
       
       // 메이저리그 통계가 없으면 마이너리그 통계 시도
       if (!data.stats || data.stats.length === 0) {
         response = await fetch(
-          `${MLB_API_BASE}/people/${playerId}/stats?stats=season&season=${season}&gameType=R&group=hitting,pitching`
+          getApiUrl(`/people/${playerId}/stats?stats=season&season=${season}&gameType=R&group=hitting,pitching`)
         );
         data = await response.json();
       }
@@ -298,16 +311,16 @@ class MLBService {
       const sportIds = '1,11,12,13,14,15,16';
       
       // 여러 팀의 경기를 한번에 가져오기
-      let url = `${MLB_API_BASE}/schedule?sportId=${sportIds}&startDate=${startDate}&endDate=${endDate}`;
+      let path = `/schedule?sportId=${sportIds}&startDate=${startDate}&endDate=${endDate}`;
       if (teamIds && teamIds.length > 0) {
         // 팀 ID가 0인 경우 제외
         const validTeamIds = teamIds.filter(id => id > 0);
         if (validTeamIds.length > 0) {
-          url += `&teamId=${validTeamIds.join(',')}`;
+          path += `&teamId=${validTeamIds.join(',')}`;
         }
       }
       
-      const response = await fetch(url);
+      const response = await fetch(getApiUrl(path));
       const data = await response.json();
       
       const games: MLBGame[] = [];
@@ -386,7 +399,7 @@ class MLBService {
   // 팀 정보 가져오기
   async getTeam(teamId: number) {
     try {
-      const response = await fetch(`${MLB_API_BASE}/teams/${teamId}`);
+      const response = await fetch(getApiUrl(`/teams/${teamId}`));
       const data = await response.json();
       return data.teams?.[0] || null;
     } catch (error) {
@@ -399,12 +412,12 @@ class MLBService {
   async getGameLiveFeed(gamePk: number) {
     try {
       // v1.1 API 사용
-      const response = await fetch(`${MLB_API_BASE}.1/game/${gamePk}/feed/live`);
+      const response = await fetch(getApiUrl(`/game/${gamePk}/feed/live`));
       
       if (!response.ok) {
         console.warn(`Game ${gamePk} not found, trying v1 API...`);
         // v1 API fallback
-        const v1Response = await fetch(`${MLB_API_BASE}/game/${gamePk}/feed/live`);
+        const v1Response = await fetch(getApiUrl(`/game/${gamePk}/feed/live`));
         if (!v1Response.ok) {
           console.error(`Game ${gamePk} not found in both v1.1 and v1 APIs`);
           return null;
@@ -428,14 +441,14 @@ class MLBService {
       const currentYear = today.getFullYear();
       
       // 현재 연도 시즌 데이터 가져오기
-      let url = `${MLB_API_BASE}/people/${playerId}/stats?stats=gameLog&season=${currentYear}`;
+      let path = `/people/${playerId}/stats?stats=gameLog&season=${currentYear}`;
       
       // sportId가 제공되면 추가 (마이너리그 필수)
       if (sportId) {
-        url += `&sportId=${sportId}`;
+        path += `&sportId=${sportId}`;
       }
       
-      let response = await fetch(url);
+      let response = await fetch(getApiUrl(path));
       let data = await response.json();
       
       if (!data.stats || data.stats.length === 0) return [];
@@ -619,7 +632,7 @@ class MLBService {
   async getPlayerGameStats(playerId: number, gameId: number) {
     try {
       const response = await fetch(
-        `${MLB_API_BASE}/game/${gameId}/boxscore`
+        getApiUrl(`/game/${gameId}/boxscore`)
       );
       const data = await response.json();
       
@@ -643,7 +656,7 @@ class MLBService {
   async getPitcherInningDetails(gameId: number, playerId: number) {
     try {
       const response = await fetch(
-        `${MLB_API_BASE}/game/${gameId}/playByPlay`
+        getApiUrl(`/game/${gameId}/playByPlay`)
       );
       const data = await response.json();
       
@@ -733,7 +746,7 @@ class MLBService {
   async getPlayerInningStats(gameId: number, playerId: number) {
     try {
       const response = await fetch(
-        `${MLB_API_BASE}/game/${gameId}/playByPlay`
+        getApiUrl(`/game/${gameId}/playByPlay`)
       );
       const data = await response.json();
       
@@ -796,7 +809,7 @@ class MLBService {
   async getGamePlayByPlay(gameId: number, playerId: number) {
     try {
       const response = await fetch(
-        `${MLB_API_BASE}/game/${gameId}/playByPlay`
+        getApiUrl(`/game/${gameId}/playByPlay`)
       );
       const data = await response.json();
       
