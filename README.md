@@ -2,7 +2,7 @@
 
 > 해외에서 활약하는 한국인 스포츠 스타들의 실시간 경기 기록과 일정을 한눈에 보는 웹 애플리케이션
 
-🔗 **라이브 데모**: [Vercel에서 배포 예정]
+🔗 **라이브 데모**: [https://awesome-korean-mlb-players.vercel.app](https://awesome-korean-mlb-players.vercel.app)
 
 ## 🌟 주요 기능
 
