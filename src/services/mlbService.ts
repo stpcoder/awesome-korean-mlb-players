@@ -9,6 +9,9 @@ const MLB_API_BASE = isDevelopment
   ? '/api/mlb/api/v1'  // 개발 환경: Vite 프록시 사용
   : 'https://statsapi.mlb.com/api/v1';  // 프로덕션: 직접 호출
 
+// Vercel Functions URL (GitHub Pages에서 사용)
+const VERCEL_PROXY_URL = 'https://awesome-korean-mlb-players.vercel.app/api/mlb-proxy';
+
 // 프로덕션 환경에서 프록시 사용을 위한 헬퍼 함수
 function getApiUrl(path: string): string {
   if (isDevelopment) {
@@ -16,7 +19,7 @@ function getApiUrl(path: string): string {
   }
   // 프로덕션에서는 Vercel 프록시 함수 사용
   const fullUrl = `https://statsapi.mlb.com/api/v1${path}`;
-  return `/api/mlb-proxy?url=${encodeURIComponent(fullUrl)}`;
+  return `${VERCEL_PROXY_URL}?url=${encodeURIComponent(fullUrl)}`;
 }
 
 export interface MLBPlayer {

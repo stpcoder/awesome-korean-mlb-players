@@ -248,7 +248,7 @@ export const MLBScheduleEnhanced: React.FC = () => {
       const isDevelopment = import.meta.env.DEV;
       const url = isDevelopment 
         ? `/api/mlb/api/v1${apiPath}`
-        : `/api/mlb-proxy?url=${encodeURIComponent(`https://statsapi.mlb.com/api/v1${apiPath}`)}`;
+        : `https://awesome-korean-mlb-players.vercel.app/api/mlb-proxy?url=${encodeURIComponent(`https://statsapi.mlb.com/api/v1${apiPath}`)}`;
       
       const response = await fetch(url);
       const data = await response.json();
