@@ -379,9 +379,15 @@ export const MLBScheduleEnhanced: React.FC = () => {
     
     try {
       // 한국 선수 기록 가져오기
+      console.log('Calling getKoreanPlayersInGame with:', { gamePk: game.gamePk, playerIds });
       const performances = await mlbService.getKoreanPlayersInGame(game.gamePk, playerIds);
       console.log('Fetched performances:', performances);
       console.log('Performances length:', performances.length);
+      
+      if (performances.length === 0) {
+        console.warn('No Korean players found in this game!');
+        console.log('Trying to debug - Available playerIds:', playerIds);
+      }
       
       // 전체 경기 박스스코어 가져오기 (프록시 사용)
       const isDevelopment = import.meta.env.DEV;

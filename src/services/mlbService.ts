@@ -412,10 +412,13 @@ class MLBService {
   async getGameLiveFeed(gamePk: number) {
     try {
       // v1.1 API 사용
-      const response = await fetch(getApiUrl(`/game/${gamePk}/feed/live`));
+      console.log('[getGameLiveFeed] Fetching game data for:', gamePk);
+      const apiUrl = getApiUrl(`/game/${gamePk}/feed/live`);
+      console.log('[getGameLiveFeed] API URL:', apiUrl);
+      const response = await fetch(apiUrl);
       
       if (!response.ok) {
-        console.warn(`Game ${gamePk} not found, trying v1 API...`);
+        console.warn(`[getGameLiveFeed] Game ${gamePk} not found (status: ${response.status}), trying v1 API...`);
         // v1 API fallback
         const v1Response = await fetch(getApiUrl(`/game/${gamePk}/feed/live`));
         if (!v1Response.ok) {
@@ -427,9 +430,13 @@ class MLBService {
       }
       
       const data = await response.json();
+      console.log('[getGameLiveFeed] Successfully fetched game data');
       return data;
     } catch (error) {
-      console.error(`Error fetching game ${gamePk}:`, error);
+      console.error(`[getGameLiveFeed] Error fetching game ${gamePk}:`, error);
+      if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+        console.error('[getGameLiveFeed] This looks like a CORS error!');
+      }
       return null;
     }
   }
@@ -493,11 +500,13 @@ class MLBService {
   // 경기별 한국 선수 출전 정보 가져오기
   async getKoreanPlayersInGame(gamePk: number, playerIds: number[]): Promise<any[]> {
     try {
+      console.log('[getKoreanPlayersInGame] Starting with gamePk:', gamePk, 'playerIds:', playerIds);
       const gameData = await this.getGameLiveFeed(gamePk);
       if (!gameData) {
-        console.log('No game data found for gamePk:', gamePk);
+        console.log('[getKoreanPlayersInGame] No game data found for gamePk:', gamePk);
         return [];
       }
+      console.log('[getKoreanPlayersInGame] Game data fetched successfully');
       
       const boxscore = gameData.liveData?.boxscore;
       if (!boxscore) {
