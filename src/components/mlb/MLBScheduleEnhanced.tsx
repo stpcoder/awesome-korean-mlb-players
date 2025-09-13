@@ -383,8 +383,12 @@ export const MLBScheduleEnhanced: React.FC = () => {
       console.log('Fetched performances:', performances);
       console.log('Performances length:', performances.length);
       
-      // 전체 경기 박스스코어 가져오기 (Vite 프록시 사용)
-      const boxscoreResponse = await fetch(`/api/mlb/api/v1/game/${game.gamePk}/boxscore`);
+      // 전체 경기 박스스코어 가져오기 (프록시 사용)
+      const isDevelopment = import.meta.env.DEV;
+      const boxscoreUrl = isDevelopment 
+        ? `/api/mlb/api/v1/game/${game.gamePk}/boxscore`
+        : `/api/mlb-proxy?url=${encodeURIComponent(`https://statsapi.mlb.com/api/v1/game/${game.gamePk}/boxscore`)}`;
+      const boxscoreResponse = await fetch(boxscoreUrl);
       const boxscoreData = await boxscoreResponse.json();
       console.log('Fetched boxscore:', boxscoreData);
       setGameBoxscore(boxscoreData);
