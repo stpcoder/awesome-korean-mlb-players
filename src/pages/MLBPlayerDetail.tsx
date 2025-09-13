@@ -5,6 +5,7 @@ import { mlbService, MLBPlayer } from '../services/mlbService';
 import { getKoreanTeamName } from '../data/mlbTeamNames';
 import { getKoreanPosition } from '../data/mlbPositions';
 import { formatKoreanDate, formatKoreanDateLong } from '../utils/dateUtils';
+import { logger } from '../utils/logger';
 
 export const MLBPlayerDetail: React.FC = () => {
   const { playerId } = useParams<{ playerId: string }>();
@@ -55,7 +56,7 @@ export const MLBPlayerDetail: React.FC = () => {
       setSeasonStats(statsData);
       setHasMore(recentData.length > 0);
     } catch (err) {
-      console.error('Error fetching player data:', err);
+      logger.error('Error fetching player data:', err);
     } finally {
       setLoading(false);
     }
@@ -77,7 +78,7 @@ export const MLBPlayerDetail: React.FC = () => {
         setDaysBack(newDaysBack);
       }
     } catch (err) {
-      console.error('Error loading more games:', err);
+      logger.error('Error loading more games:', err);
     } finally {
       setLoadingMore(false);
     }
@@ -487,7 +488,7 @@ export const MLBPlayerDetail: React.FC = () => {
                           setGamePlayByPlay(playByPlay);
                         }
                       } catch (error) {
-                        console.error('Error fetching play by play:', error);
+                        logger.error('Error fetching play by play:', error);
                         setGamePlayByPlay([]);
                       } finally {
                         setLoadingPlayByPlay(false);

@@ -5,6 +5,7 @@ import { mlbPlayers } from '../../data/mlbPlayers';
 import { getKoreanTeamName } from '../../data/mlbTeamNames';
 import { getKoreanPosition } from '../../data/mlbPositions';
 import { Modal } from '../common/Modal';
+import { logger } from '../../utils/logger';
 
 interface MLBGameWithKorean {
   gamePk: number;
@@ -169,7 +170,7 @@ export const MLBScheduleEnhanced: React.FC = () => {
 
   // 경기 데이터 가져오기 - 무한 스크롤을 위해 개선
   const fetchGames = useCallback(async (direction: 'initial' | 'past' | 'future' = 'initial') => {
-    console.log('fetchGames called with direction:', direction);
+    logger.log('fetchGames called with direction:', direction);
     
     if (direction === 'initial') {
       setLoading(true);
@@ -178,7 +179,7 @@ export const MLBScheduleEnhanced: React.FC = () => {
       setFutureDaysLoaded(6); // 오늘부터 6일 후까지 이미 로드
     } else {
       if (loadingMoreRef.current) {
-        console.log('Already loading, returning early');
+        logger.log('Already loading, returning early');
         return; // 이미 로딩 중이면 중단
       }
       loadingMoreRef.current = true;
@@ -270,7 +271,7 @@ export const MLBScheduleEnhanced: React.FC = () => {
             }
           });
         } catch (error) {
-          console.error(`Error fetching recent games for player ${player.mlbId}:`, error);
+          logger.error(`Error fetching recent games for player ${player.mlbId}:`, error);
         }
       }
       
@@ -316,11 +317,11 @@ export const MLBScheduleEnhanced: React.FC = () => {
       
       // 새로운 경기가 없으면 더 이상 로드하지 않도록 표시
       if (newGames.length === 0) {
-        console.log('No more games to load');
+        logger.log('No more games to load');
       }
       
     } catch (error) {
-      console.error('Error fetching games:', error);
+      logger.error('Error fetching games:', error);
     } finally {
       if (direction === 'initial') {
         setLoading(false);
@@ -350,18 +351,18 @@ export const MLBScheduleEnhanced: React.FC = () => {
 
   // 더 보기 버튼 클릭 핸들러 (미래 경기)
   const handleLoadMore = async () => {
-    console.log('Load more clicked, loadingMore:', loadingMore);
+    logger.log('Load more clicked, loadingMore:', loadingMore);
     if (!loadingMore) {
-      console.log('Calling fetchGames(future)...');
+      logger.log('Calling fetchGames(future)...');
       await fetchGames('future');
     }
   };
   
   // 이전 경기 보기 버튼 클릭 핸들러 (과거 경기)
   const handleLoadPast = async () => {
-    console.log('Load past clicked, loadingMore:', loadingMore);
+    logger.log('Load past clicked, loadingMore:', loadingMore);
     if (!loadingMore) {
-      console.log('Calling fetchGames(past)...');
+      logger.log('Calling fetchGames(past)...');
       await fetchGames('past');
     }
   };
@@ -372,21 +373,21 @@ export const MLBScheduleEnhanced: React.FC = () => {
     setSelectedGame(game);
     setShowModal(true);
     
-    console.log('=== 경기 상세 정보 가져오기 ===');
-    console.log('Game PK:', game.gamePk);
-    console.log('Teams:', game.teams.home.team.name, 'vs', game.teams.away.team.name);
-    console.log('한국 선수 IDs:', playerIds);
+    logger.log('=== 경기 상세 정보 가져오기 ===');
+    logger.log('Game PK:', game.gamePk);
+    logger.log('Teams:', game.teams.home.team.name, 'vs', game.teams.away.team.name);
+    logger.log('한국 선수 IDs:', playerIds);
     
     try {
       // 한국 선수 기록 가져오기
-      console.log('Calling getKoreanPlayersInGame with:', { gamePk: game.gamePk, playerIds });
+      logger.log('Calling getKoreanPlayersInGame with:', { gamePk: game.gamePk, playerIds });
       const performances = await mlbService.getKoreanPlayersInGame(game.gamePk, playerIds);
-      console.log('Fetched performances:', performances);
-      console.log('Performances length:', performances.length);
+      logger.log('Fetched performances:', performances);
+      logger.log('Performances length:', performances.length);
       
       if (performances.length === 0) {
-        console.warn('No Korean players found in this game!');
-        console.log('Trying to debug - Available playerIds:', playerIds);
+        logger.warn('No Korean players found in this game!');
+        logger.log('Trying to debug - Available playerIds:', playerIds);
       }
       
       // 전체 경기 박스스코어 가져오기 (프록시 사용)
@@ -396,12 +397,12 @@ export const MLBScheduleEnhanced: React.FC = () => {
         : `/api/mlb-proxy?url=${encodeURIComponent(`https://statsapi.mlb.com/api/v1/game/${game.gamePk}/boxscore`)}`;
       const boxscoreResponse = await fetch(boxscoreUrl);
       const boxscoreData = await boxscoreResponse.json();
-      console.log('Fetched boxscore:', boxscoreData);
+      logger.log('Fetched boxscore:', boxscoreData);
       setGameBoxscore(boxscoreData);
       
       // 이닝별 플레이 기록 가져오기
       const liveFeed = await mlbService.getGameLiveFeed(game.gamePk);
-      console.log('Fetched live feed:', liveFeed);
+      logger.log('Fetched live feed:', liveFeed);
       setGameLiveFeed(liveFeed);
       
       // 한국 선수의 이닝별 타석 결과 추가
@@ -430,7 +431,7 @@ export const MLBScheduleEnhanced: React.FC = () => {
       
       setGamePerformances(performancesWithInningStats);
     } catch (error) {
-      console.error('Error fetching game data:', error);
+      logger.error('Error fetching game data:', error);
     } finally {
       setLoadingPerformance(false);
     }
@@ -561,9 +562,9 @@ export const MLBScheduleEnhanced: React.FC = () => {
     weekday: 'short'
   });
   
-  console.log('Today Korean:', todayKorean);
-  console.log('Today String:', todayStr);
-  console.log('Games by date keys:', Object.keys(gamesByDate));
+  logger.log('Today Korean:', todayKorean);
+  logger.log('Today String:', todayStr);
+  logger.log('Games by date keys:', Object.keys(gamesByDate));
   
   // 날짜를 정렬 - 단순히 날짜 순서대로 정렬
   const sortedDates = Object.keys(gamesByDate).sort((a, b) => {

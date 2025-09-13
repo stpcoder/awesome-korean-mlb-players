@@ -2,6 +2,7 @@
 // API에서 실시간으로 선수 정보를 가져와 자동 분류
 
 import { trackedPlayers, getKoreanName } from '../data/mlbPlayerIds';
+import { logger } from '../utils/logger';
 
 export interface DynamicPlayerInfo {
   mlbId: number;
@@ -38,7 +39,7 @@ export async function fetchPlayerInfo(mlbId: number): Promise<DynamicPlayerInfo 
     const data = await response.json();
     
     if (!data.people || data.people.length === 0) {
-      console.error(`선수 정보를 찾을 수 없음: ${mlbId}`);
+      logger.error(`선수 정보를 찾을 수 없음: ${mlbId}`);
       return null;
     }
     
@@ -67,7 +68,7 @@ export async function fetchPlayerInfo(mlbId: number): Promise<DynamicPlayerInfo 
     
     return playerInfo;
   } catch (error) {
-    console.error(`선수 정보 가져오기 실패 (ID: ${mlbId}):`, error);
+    logger.error(`선수 정보 가져오기 실패 (ID: ${mlbId}):`, error);
     return null;
   }
 }

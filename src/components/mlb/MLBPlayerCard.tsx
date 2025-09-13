@@ -4,6 +4,7 @@ import { mlbService, MLBPlayer } from '../../services/mlbService';
 import { getKoreanTeamName } from '../../data/mlbTeamNames';
 import { getKoreanPosition } from '../../data/mlbPositions';
 import { formatKoreanDate } from '../../utils/dateUtils';
+import { logger } from '../../utils/logger';
 
 interface MLBPlayerCardProps {
   playerInfo: MLBPlayerInfo;
@@ -30,7 +31,7 @@ export const MLBPlayerCard: React.FC<MLBPlayerCardProps> = ({ playerInfo }) => {
         setPlayer(playerData);
         setRecentGames(recentData);
       } catch (err) {
-        console.error('Error fetching MLB data:', err);
+        logger.error('Error fetching MLB data:', err);
       } finally {
         setLoading(false);
       }

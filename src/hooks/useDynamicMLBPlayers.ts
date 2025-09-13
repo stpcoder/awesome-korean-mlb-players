@@ -7,6 +7,7 @@ import {
   fetchAllPlayersInfo,
   detectLevelChanges 
 } from '../services/mlbPlayerService';
+import { logger } from '../utils/logger';
 
 interface UseDynamicMLBPlayersReturn {
   mlbPlayers: DynamicPlayerInfo[];
@@ -38,7 +39,7 @@ export function useDynamicMLBPlayers(): UseDynamicMLBPlayersReturn {
       const changes = await detectLevelChanges();
       if (changes.length > 0) {
         setLevelChanges(changes);
-        console.log('🔄 선수 레벨 변경 감지:', changes);
+        logger.log('🔄 선수 레벨 변경 감지:', changes);
       }
       
       // 모든 선수 정보 가져오기
@@ -48,7 +49,7 @@ export function useDynamicMLBPlayers(): UseDynamicMLBPlayersReturn {
       
     } catch (err) {
       setError(err instanceof Error ? err.message : '선수 정보를 불러오는데 실패했습니다');
-      console.error('선수 정보 로딩 에러:', err);
+      logger.error('선수 정보 로딩 에러:', err);
     } finally {
       setIsLoading(false);
     }

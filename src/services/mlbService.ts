@@ -1,6 +1,8 @@
 // MLB Stats API 서비스
 // 공식 무료 API - 제한 없음!
 
+import { logger } from '../utils/logger';
+
 // 환경에 따라 API 경로 설정
 const isDevelopment = import.meta.env.DEV;
 const MLB_API_BASE = isDevelopment 
@@ -160,7 +162,7 @@ class MLBService {
       }
       return null;
     } catch (error) {
-      console.error(`Error fetching player info for ${playerId}:`, error);
+      logger.error(`Error fetching player info for ${playerId}:`, error);
       return null;
     }
   }
@@ -172,7 +174,7 @@ class MLBService {
       const results = await Promise.all(promises);
       return results.filter(player => player !== null);
     } catch (error) {
-      console.error('Error fetching players info:', error);
+      logger.error('Error fetching players info:', error);
       return [];
     }
   }
@@ -235,7 +237,7 @@ class MLBService {
       const data = await response.json();
       return data.people?.[0] || null;
     } catch (error) {
-      console.error(`Error fetching player ${playerId}:`, error);
+      logger.error(`Error fetching player ${playerId}:`, error);
       return null;
     }
   }
@@ -275,7 +277,7 @@ class MLBService {
         }
       };
     } catch (error) {
-      console.error(`Error fetching stats for player ${playerId}:`, error);
+      logger.error(`Error fetching stats for player ${playerId}:`, error);
       return null;
     }
   }
@@ -348,7 +350,7 @@ class MLBService {
         return games.sort((a, b) => new Date(a.gameDate).getTime() - new Date(b.gameDate).getTime());
       }
     } catch (error) {
-      console.error('Error fetching upcoming games:', error);
+      logger.error('Error fetching upcoming games:', error);
       return [];
     }
   }
@@ -403,7 +405,7 @@ class MLBService {
       const data = await response.json();
       return data.teams?.[0] || null;
     } catch (error) {
-      console.error(`Error fetching team ${teamId}:`, error);
+      logger.error(`Error fetching team ${teamId}:`, error);
       return null;
     }
   }
@@ -412,17 +414,17 @@ class MLBService {
   async getGameLiveFeed(gamePk: number) {
     try {
       // v1.1 API 사용
-      console.log('[getGameLiveFeed] Fetching game data for:', gamePk);
+      logger.log('[getGameLiveFeed] Fetching game data for:', gamePk);
       const apiUrl = getApiUrl(`/game/${gamePk}/feed/live`);
-      console.log('[getGameLiveFeed] API URL:', apiUrl);
+      logger.log('[getGameLiveFeed] API URL:', apiUrl);
       const response = await fetch(apiUrl);
       
       if (!response.ok) {
-        console.warn(`[getGameLiveFeed] Game ${gamePk} not found (status: ${response.status}), trying v1 API...`);
+        logger.warn(`[getGameLiveFeed] Game ${gamePk} not found (status: ${response.status}), trying v1 API...`);
         // v1 API fallback
         const v1Response = await fetch(getApiUrl(`/game/${gamePk}/feed/live`));
         if (!v1Response.ok) {
-          console.error(`Game ${gamePk} not found in both v1.1 and v1 APIs`);
+          logger.error(`Game ${gamePk} not found in both v1.1 and v1 APIs`);
           return null;
         }
         const v1Data = await v1Response.json();
@@ -430,12 +432,12 @@ class MLBService {
       }
       
       const data = await response.json();
-      console.log('[getGameLiveFeed] Successfully fetched game data');
+      logger.log('[getGameLiveFeed] Successfully fetched game data');
       return data;
     } catch (error) {
-      console.error(`[getGameLiveFeed] Error fetching game ${gamePk}:`, error);
+      logger.error(`[getGameLiveFeed] Error fetching game ${gamePk}:`, error);
       if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
-        console.error('[getGameLiveFeed] This looks like a CORS error!');
+        logger.error('[getGameLiveFeed] This looks like a CORS error!');
       }
       return null;
     }
@@ -492,7 +494,7 @@ class MLBService {
           gamePk: game.game?.gamePk // 경기 ID 추가
         }));
     } catch (error) {
-      console.error(`Error fetching recent games for player ${playerId}:`, error);
+      logger.error(`Error fetching recent games for player ${playerId}:`, error);
       return [];
     }
   }
@@ -500,28 +502,28 @@ class MLBService {
   // 경기별 한국 선수 출전 정보 가져오기
   async getKoreanPlayersInGame(gamePk: number, playerIds: number[]): Promise<any[]> {
     try {
-      console.log('[getKoreanPlayersInGame] Starting with gamePk:', gamePk, 'playerIds:', playerIds);
+      logger.log('[getKoreanPlayersInGame] Starting with gamePk:', gamePk, 'playerIds:', playerIds);
       const gameData = await this.getGameLiveFeed(gamePk);
       if (!gameData) {
-        console.log('[getKoreanPlayersInGame] No game data found for gamePk:', gamePk);
+        logger.log('[getKoreanPlayersInGame] No game data found for gamePk:', gamePk);
         return [];
       }
-      console.log('[getKoreanPlayersInGame] Game data fetched successfully');
+      logger.log('[getKoreanPlayersInGame] Game data fetched successfully');
       
       const boxscore = gameData.liveData?.boxscore;
       if (!boxscore) {
-        console.log('No boxscore data found');
+        logger.log('No boxscore data found');
         return [];
       }
       
       const playersInGame = [];
-      console.log('Looking for Korean players:', playerIds);
-      console.log('Boxscore teams:', Object.keys(boxscore.teams));
+      logger.log('Looking for Korean players:', playerIds);
+      logger.log('Boxscore teams:', Object.keys(boxscore.teams));
       
       // 홈팀/원정팀 선수 명단에서 한국 선수 찾기
       for (const teamKey of ['home', 'away']) {
         const teamPlayers = boxscore.teams[teamKey].players || {};
-        console.log(`${teamKey} team players:`, Object.keys(teamPlayers));
+        logger.log(`${teamKey} team players:`, Object.keys(teamPlayers));
         
         for (const [playerKey, playerData] of Object.entries(teamPlayers)) {
           // playerData가 객체인지 확인
@@ -532,7 +534,7 @@ class MLBService {
           // 모든 선수 ID 로그
           if (teamKey === 'away' || teamKey === 'home') {
             const person = (playerData as any).person || {};
-            console.log(`Player: ${person.fullName} (ID: ${id})`);
+            logger.log(`Player: ${person.fullName} (ID: ${id})`);
           }
           
           // 해당 선수가 한국 선수 목록에 있는지 확인
@@ -542,9 +544,9 @@ class MLBService {
             const pitching = stats.pitching || {};
             const person = (playerData as any).person || {};
             
-            console.log(`Found Korean player: ${person.fullName} (${id}), playerData:`, playerData);
-            console.log(`Batting stats:`, batting);
-            console.log(`Pitching stats:`, pitching);
+            logger.log(`Found Korean player: ${person.fullName} (${id}), playerData:`, playerData);
+            logger.log(`Batting stats:`, batting);
+            logger.log(`Pitching stats:`, pitching);
             
             // 선수가 경기에 출전했는지 확인 - 더 포괄적으로 체크
             const played = (playerData as any).gameStatus?.isCurrentBatter || 
@@ -629,10 +631,10 @@ class MLBService {
         }
       }
       
-      console.log('Found players in game with inning stats:', playersInGame);
+      logger.log('Found players in game with inning stats:', playersInGame);
       return playersInGame;
     } catch (error) {
-      console.error(`Error fetching Korean players in game ${gamePk}:`, error);
+      logger.error(`Error fetching Korean players in game ${gamePk}:`, error);
       return [];
     }
   }
@@ -656,7 +658,7 @@ class MLBService {
       }
       return null;
     } catch (error) {
-      console.error(`Error fetching game stats:`, error);
+      logger.error(`Error fetching game stats:`, error);
       return null;
     }
   }
@@ -718,7 +720,7 @@ class MLBService {
         ...value
       }));
     } catch (error) {
-      console.error(`Error fetching pitcher inning details:`, error);
+      logger.error(`Error fetching pitcher inning details:`, error);
       return [];
     }
   }
@@ -781,7 +783,7 @@ class MLBService {
       
       return inningStats;
     } catch (error) {
-      console.error(`Error fetching player inning stats:`, error);
+      logger.error(`Error fetching player inning stats:`, error);
       return [];
     }
   }
@@ -890,7 +892,7 @@ class MLBService {
       
       return playerAtBats;
     } catch (error) {
-      console.error(`Error fetching play by play:`, error);
+      logger.error(`Error fetching play by play:`, error);
       return [];
     }
   }
