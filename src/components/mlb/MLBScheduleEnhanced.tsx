@@ -714,31 +714,31 @@ export const MLBScheduleEnhanced: React.FC = () => {
                     >
                       <div className="flex flex-col gap-3">
                         {/* 팀 매치업과 점수 및 시간 */}
-                        <div className="flex items-center justify-between relative min-h-[32px]">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                           {/* 팀과 점수 - 그리드로 정렬 */}
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 w-full max-w-lg">
+                          <div className="flex items-center justify-center flex-1">
+                            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-3 w-full max-w-lg">
                               {/* 원정팀 - 우측 정렬 */}
-                              <div className="flex items-center gap-1.5 justify-end">
+                              <div className="flex items-center gap-1 sm:gap-1.5 justify-end">
                                 <img 
                                   src={mlbService.getTeamLogoUrl(game.teams.away.team.id)} 
                                   alt={game.teams.away.team.name}
-                                  className="w-5 h-5 flex-shrink-0"
+                                  className="w-4 sm:w-5 h-4 sm:h-5 flex-shrink-0"
                                   onError={(e) => {
                                     e.currentTarget.style.display = 'none';
                                   }}
                                 />
-                                <span className="font-medium text-sm text-gray-700 text-right truncate max-w-[150px]">
+                                <span className="font-medium text-xs sm:text-sm text-gray-700 text-right truncate max-w-[80px] sm:max-w-[150px]">
                                   {getKoreanTeamName(game.teams.away.team.name)}
                                 </span>
                               </div>
                               
                               {/* 점수 또는 vs - 정중앙 */}
                               {(isLive || isFinished) ? (
-                                <div className="flex items-center gap-2 justify-center">
-                                  <span className="font-bold text-lg">{game.teams.away.score}</span>
-                                  <span className="text-sm text-gray-600 font-semibold">:</span>
-                                  <span className="font-bold text-lg">{game.teams.home.score}</span>
+                                <div className="flex items-center gap-1 sm:gap-2 justify-center">
+                                  <span className="font-bold text-base sm:text-lg">{game.teams.away.score}</span>
+                                  <span className="text-xs sm:text-sm text-gray-600 font-semibold">:</span>
+                                  <span className="font-bold text-base sm:text-lg">{game.teams.home.score}</span>
                                 </div>
                               ) : (
                                 <div className="flex items-center justify-center">
@@ -747,24 +747,24 @@ export const MLBScheduleEnhanced: React.FC = () => {
                               )}
                               
                               {/* 홈팀 - 좌측 정렬 */}
-                              <div className="flex items-center gap-1.5 justify-start">
+                              <div className="flex items-center gap-1 sm:gap-1.5 justify-start">
                                 <img 
                                   src={mlbService.getTeamLogoUrl(game.teams.home.team.id)} 
                                   alt={game.teams.home.team.name}
-                                  className="w-5 h-5 flex-shrink-0"
+                                  className="w-4 sm:w-5 h-4 sm:h-5 flex-shrink-0"
                                   onError={(e) => {
                                     e.currentTarget.style.display = 'none';
                                   }}
                                 />
-                                <span className="font-medium text-sm text-gray-700 truncate max-w-[150px]">
+                                <span className="font-medium text-xs sm:text-sm text-gray-700 truncate max-w-[80px] sm:max-w-[150px]">
                                   {getKoreanTeamName(game.teams.home.team.name)}
                                 </span>
                               </div>
                             </div>
                           </div>
                           
-                          {/* 시간 및 상태 - 우측 정렬 (z-index로 위에 표시) */}
-                          <div className="flex items-center gap-2 ml-auto relative z-10">
+                          {/* 시간 및 상태 - 우측 정렬 또는 하단 */}
+                          <div className="flex items-center gap-2 justify-center sm:justify-end">
                             <span className="text-xs sm:text-sm text-gray-600">
                               {game.koreanDateString?.split(' ').slice(-2).join(' ') || 
                                new Date(game.gameDate).toLocaleTimeString('ko-KR', { 
@@ -842,27 +842,27 @@ export const MLBScheduleEnhanced: React.FC = () => {
           <div className="space-y-6">
             {/* 경기 정보 - 심플한 헤더 */}
             <div className="text-center space-y-2">
-              <div className="flex items-center justify-center gap-3">
-                <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-1 sm:gap-2">
                   <img 
                     src={mlbService.getTeamLogoUrl(selectedGame.teams.away.team.id)} 
                     alt={selectedGame.teams.away.team.name}
-                    className="w-8 h-8"
+                    className="w-6 sm:w-8 h-6 sm:h-8"
                     onError={(e) => {
                       e.currentTarget.style.display = 'none';
                     }}
                   />
-                  <span className="font-semibold text-lg">{getKoreanTeamName(selectedGame.teams.away.team.name)}</span>
-                  <span className="text-2xl font-bold text-gray-900">{selectedGame.teams.away.score}</span>
+                  <span className="font-semibold text-sm sm:text-lg">{getKoreanTeamName(selectedGame.teams.away.team.name)}</span>
+                  <span className="text-xl sm:text-2xl font-bold text-gray-900">{selectedGame.teams.away.score}</span>
                 </div>
-                <span className="text-lg text-gray-500">vs</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl font-bold text-gray-900">{selectedGame.teams.home.score}</span>
-                  <span className="font-semibold text-lg">{getKoreanTeamName(selectedGame.teams.home.team.name)}</span>
+                <span className="text-sm sm:text-lg text-gray-500">vs</span>
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <span className="text-xl sm:text-2xl font-bold text-gray-900">{selectedGame.teams.home.score}</span>
+                  <span className="font-semibold text-sm sm:text-lg">{getKoreanTeamName(selectedGame.teams.home.team.name)}</span>
                   <img 
                     src={mlbService.getTeamLogoUrl(selectedGame.teams.home.team.id)} 
                     alt={selectedGame.teams.home.team.name}
-                    className="w-8 h-8"
+                    className="w-6 sm:w-8 h-6 sm:h-8"
                     onError={(e) => {
                       e.currentTarget.style.display = 'none';
                     }}
@@ -889,67 +889,67 @@ export const MLBScheduleEnhanced: React.FC = () => {
                     {/* 팀 통계 - 가로 레이아웃 */}
                     <div className="space-y-3">
                       {/* 원정 팀 */}
-                      <div className="bg-gray-50 rounded-lg p-3">
-                        <div className="flex items-center gap-3">
+                      <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
+                        <div className="flex items-center gap-2 sm:gap-3">
                           <img 
                             src={mlbService.getTeamLogoUrl(selectedGame.teams.away.team.id)} 
                             alt={selectedGame.teams.away.team.name}
-                            className="w-6 h-6"
+                            className="w-5 sm:w-6 h-5 sm:h-6"
                             onError={(e) => {
                               e.currentTarget.style.display = 'none';
                             }}
                           />
-                          <div className="font-semibold text-gray-900">{getKoreanTeamName(selectedGame.teams.away.team.name)}</div>
+                          <div className="font-semibold text-sm sm:text-base text-gray-900">{getKoreanTeamName(selectedGame.teams.away.team.name)}</div>
                         </div>
-                        <div className="flex gap-2 mt-3">
-                          <div className="flex-1 bg-white rounded p-2 text-center">
+                        <div className="flex gap-1 sm:gap-2 mt-2 sm:mt-3">
+                          <div className="flex-1 bg-white rounded p-1.5 sm:p-2 text-center">
                             <div className="text-xs text-gray-500">득점</div>
-                            <div className="text-lg font-bold">{gameBoxscore.teams?.away?.teamStats?.batting?.runs ?? selectedGame.teams.away.score ?? 0}</div>
+                            <div className="text-base sm:text-lg font-bold">{gameBoxscore.teams?.away?.teamStats?.batting?.runs ?? selectedGame.teams.away.score ?? 0}</div>
                           </div>
-                          <div className="flex-1 bg-white rounded p-2 text-center">
+                          <div className="flex-1 bg-white rounded p-1.5 sm:p-2 text-center">
                             <div className="text-xs text-gray-500">안타</div>
-                            <div className="text-lg font-bold">{gameBoxscore.teams?.away?.teamStats?.batting?.hits ?? 0}</div>
+                            <div className="text-base sm:text-lg font-bold">{gameBoxscore.teams?.away?.teamStats?.batting?.hits ?? 0}</div>
                           </div>
-                          <div className="flex-1 bg-white rounded p-2 text-center">
+                          <div className="flex-1 bg-white rounded p-1.5 sm:p-2 text-center">
                             <div className="text-xs text-gray-500">실책</div>
-                            <div className="text-lg font-bold">{gameBoxscore.teams?.away?.teamStats?.batting?.errors ?? 0}</div>
+                            <div className="text-base sm:text-lg font-bold">{gameBoxscore.teams?.away?.teamStats?.batting?.errors ?? 0}</div>
                           </div>
-                          <div className="flex-1 bg-white rounded p-2 text-center">
+                          <div className="flex-1 bg-white rounded p-1.5 sm:p-2 text-center">
                             <div className="text-xs text-gray-500">잔루</div>
-                            <div className="text-lg font-bold">{gameBoxscore.teams?.away?.teamStats?.batting?.leftOnBase ?? 0}</div>
+                            <div className="text-base sm:text-lg font-bold">{gameBoxscore.teams?.away?.teamStats?.batting?.leftOnBase ?? 0}</div>
                           </div>
                         </div>
                       </div>
                       
                       {/* 홈 팀 */}
-                      <div className="bg-gray-50 rounded-lg p-3">
-                        <div className="flex items-center gap-3">
+                      <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
+                        <div className="flex items-center gap-2 sm:gap-3">
                           <img 
                             src={mlbService.getTeamLogoUrl(selectedGame.teams.home.team.id)} 
                             alt={selectedGame.teams.home.team.name}
-                            className="w-6 h-6"
+                            className="w-5 sm:w-6 h-5 sm:h-6"
                             onError={(e) => {
                               e.currentTarget.style.display = 'none';
                             }}
                           />
-                          <div className="font-semibold text-gray-900">{getKoreanTeamName(selectedGame.teams.home.team.name)}</div>
+                          <div className="font-semibold text-sm sm:text-base text-gray-900">{getKoreanTeamName(selectedGame.teams.home.team.name)}</div>
                         </div>
-                        <div className="flex gap-2 mt-3">
-                          <div className="flex-1 bg-white rounded p-2 text-center">
+                        <div className="flex gap-1 sm:gap-2 mt-2 sm:mt-3">
+                          <div className="flex-1 bg-white rounded p-1.5 sm:p-2 text-center">
                             <div className="text-xs text-gray-500">득점</div>
-                            <div className="text-lg font-bold">{gameBoxscore.teams?.home?.teamStats?.batting?.runs ?? selectedGame.teams.home.score ?? 0}</div>
+                            <div className="text-base sm:text-lg font-bold">{gameBoxscore.teams?.home?.teamStats?.batting?.runs ?? selectedGame.teams.home.score ?? 0}</div>
                           </div>
-                          <div className="flex-1 bg-white rounded p-2 text-center">
+                          <div className="flex-1 bg-white rounded p-1.5 sm:p-2 text-center">
                             <div className="text-xs text-gray-500">안타</div>
-                            <div className="text-lg font-bold">{gameBoxscore.teams?.home?.teamStats?.batting?.hits ?? 0}</div>
+                            <div className="text-base sm:text-lg font-bold">{gameBoxscore.teams?.home?.teamStats?.batting?.hits ?? 0}</div>
                           </div>
-                          <div className="flex-1 bg-white rounded p-2 text-center">
+                          <div className="flex-1 bg-white rounded p-1.5 sm:p-2 text-center">
                             <div className="text-xs text-gray-500">실책</div>
-                            <div className="text-lg font-bold">{gameBoxscore.teams?.home?.teamStats?.batting?.errors ?? 0}</div>
+                            <div className="text-base sm:text-lg font-bold">{gameBoxscore.teams?.home?.teamStats?.batting?.errors ?? 0}</div>
                           </div>
-                          <div className="flex-1 bg-white rounded p-2 text-center">
+                          <div className="flex-1 bg-white rounded p-1.5 sm:p-2 text-center">
                             <div className="text-xs text-gray-500">잔루</div>
-                            <div className="text-lg font-bold">{gameBoxscore.teams?.home?.teamStats?.batting?.leftOnBase ?? 0}</div>
+                            <div className="text-base sm:text-lg font-bold">{gameBoxscore.teams?.home?.teamStats?.batting?.leftOnBase ?? 0}</div>
                           </div>
                         </div>
                       </div>
@@ -959,51 +959,51 @@ export const MLBScheduleEnhanced: React.FC = () => {
                   {gameBoxscore.linescore && gameBoxscore.linescore.innings && gameBoxscore.linescore.innings.length > 0 && (
                     <div>
                       <h4 className="text-md font-semibold text-gray-800 mb-2">이닝별 기록</h4>
-                      <div className="overflow-x-auto">
-                        <table className="min-w-full text-sm">
+                      <div className="overflow-x-auto -mx-2 sm:mx-0">
+                        <table className="min-w-full text-xs sm:text-sm">
                         <thead>
                           <tr className="border-b">
-                            <th className="text-left py-2 px-2">팀</th>
+                            <th className="text-left py-1 sm:py-2 px-1 sm:px-2 text-xs sm:text-sm">팀</th>
                             {gameBoxscore.linescore.innings.map(inning => (
-                              <th key={inning.num} className="text-center px-2">{inning.num}</th>
+                              <th key={inning.num} className="text-center px-1 sm:px-2 text-xs sm:text-sm">{inning.num}</th>
                             ))}
-                            <th className="text-center px-2 font-bold">R</th>
-                            <th className="text-center px-2">H</th>
-                            <th className="text-center px-2">E</th>
+                            <th className="text-center px-1 sm:px-2 font-bold text-xs sm:text-sm">R</th>
+                            <th className="text-center px-1 sm:px-2 text-xs sm:text-sm">H</th>
+                            <th className="text-center px-1 sm:px-2 text-xs sm:text-sm">E</th>
                           </tr>
                         </thead>
                         <tbody>
                           <tr className="border-b">
-                            <td className="py-2 px-2 font-medium">{getKoreanTeamName(selectedGame.teams.away.team.name)}</td>
+                            <td className="py-1 sm:py-2 px-1 sm:px-2 font-medium text-xs sm:text-sm truncate max-w-[60px] sm:max-w-none">{getKoreanTeamName(selectedGame.teams.away.team.name)}</td>
                             {gameBoxscore.linescore.innings.map(inning => (
-                              <td key={inning.num} className="text-center px-2">
+                              <td key={inning.num} className="text-center px-1 sm:px-2 text-xs sm:text-sm">
                                 {inning.away.runs ?? '-'}
                               </td>
                             ))}
-                            <td className="text-center px-2 font-bold">
+                            <td className="text-center px-1 sm:px-2 font-bold text-xs sm:text-sm">
                               {gameBoxscore.teams?.away?.teamStats?.batting?.runs ?? selectedGame.teams.away.score ?? 0}
                             </td>
-                            <td className="text-center px-2">
+                            <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">
                               {gameBoxscore.teams?.away?.teamStats?.batting?.hits ?? 0}
                             </td>
-                            <td className="text-center px-2">
+                            <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">
                               {gameBoxscore.teams?.away?.teamStats?.batting?.errors ?? 0}
                             </td>
                           </tr>
                           <tr>
-                            <td className="py-2 px-2 font-medium">{getKoreanTeamName(selectedGame.teams.home.team.name)}</td>
+                            <td className="py-1 sm:py-2 px-1 sm:px-2 font-medium text-xs sm:text-sm truncate max-w-[60px] sm:max-w-none">{getKoreanTeamName(selectedGame.teams.home.team.name)}</td>
                             {gameBoxscore.linescore.innings.map(inning => (
-                              <td key={inning.num} className="text-center px-2">
+                              <td key={inning.num} className="text-center px-1 sm:px-2 text-xs sm:text-sm">
                                 {inning.home.runs ?? '-'}
                               </td>
                             ))}
-                            <td className="text-center px-2 font-bold">
+                            <td className="text-center px-1 sm:px-2 font-bold text-xs sm:text-sm">
                               {gameBoxscore.teams?.home?.teamStats?.batting?.runs ?? selectedGame.teams.home.score ?? 0}
                             </td>
-                            <td className="text-center px-2">
+                            <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">
                               {gameBoxscore.teams?.home?.teamStats?.batting?.hits ?? 0}
                             </td>
-                            <td className="text-center px-2">
+                            <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">
                               {gameBoxscore.teams?.home?.teamStats?.batting?.errors ?? 0}
                             </td>
                           </tr>
@@ -1023,7 +1023,7 @@ export const MLBScheduleEnhanced: React.FC = () => {
                       이닝별 상세 기록
                     </button>
                     
-                    {showInningDetails && gameLiveFeed && gameLiveFeed.liveData?.plays?.allPlays && gameLiveFeed.liveData.plays.allPlays.length > 0 && (() => {
+                    {showInningDetails && gameLiveFeed && gameLiveFeed.liveData?.plays?.allPlays && gameLiveFeed.liveData.plays.allPlays.length > 0 ? (() => {
                     // 이닝별로 그룹화
                     const playsByInning = gameLiveFeed.liveData.plays.allPlays
                       .filter(play => play.result.type === 'atBat' || play.result.eventType === 'game_event')
@@ -1042,26 +1042,26 @@ export const MLBScheduleEnhanced: React.FC = () => {
                     
                     return (
                       <div className="mt-3">
-                        <div className="max-h-96 overflow-y-auto bg-gray-50 rounded p-3 space-y-4 text-sm">
+                        <div className="max-h-96 overflow-y-auto bg-gray-50 rounded p-2 sm:p-3 space-y-4 text-xs sm:text-sm">
                           {Object.values(playsByInning).map((inningGroup: any, groupIndex) => (
                             <div key={groupIndex} className="border-b border-gray-300 pb-3 last:border-0">
-                              <div className="font-bold text-gray-900 mb-2 text-base">
+                              <div className="font-bold text-gray-900 mb-2 text-sm sm:text-base">
                                 {inningGroup.inning}회 {inningGroup.halfInning === 'top' ? '초' : '말'}
                               </div>
-                              <div className="space-y-2 pl-3">
+                              <div className="space-y-2 pl-2 sm:pl-3">
                                 {inningGroup.plays.map((play: any, playIndex: number) => (
-                                  <div key={playIndex} className="border-l-2 border-gray-300 pl-3">
-                                    <div className="text-gray-600">
+                                  <div key={playIndex} className="border-l-2 border-gray-300 pl-2 sm:pl-3">
+                                    <div className="text-gray-600 text-xs sm:text-sm">
                                       {play.matchup && (
-                                        <span>
-                                          타자: {play.matchup.batter.fullName} vs 투수: {play.matchup.pitcher.fullName}
+                                        <span className="block sm:inline">
+                                          타자: {play.matchup.batter.fullName} <span className="hidden sm:inline">vs</span><br className="sm:hidden" /> 투수: {play.matchup.pitcher.fullName}
                                         </span>
                                       )}
                                     </div>
                                     <div className="text-gray-800 mt-1">
-                                      <span className="font-medium">{translatePlayEvent(play.result.event)}</span>
+                                      <span className="font-medium text-xs sm:text-sm">{translatePlayEvent(play.result.event)}</span>
                                       {play.result.rbi > 0 && (
-                                        <span className="text-green-600 ml-2">({play.result.rbi}타점)</span>
+                                        <span className="text-green-600 ml-2 text-xs sm:text-sm">({play.result.rbi}타점)</span>
                                       )}
                                     </div>
                                     <div className="text-gray-500 text-xs mt-1">
@@ -1075,7 +1075,7 @@ export const MLBScheduleEnhanced: React.FC = () => {
                         </div>
                       </div>
                     );
-                  })()}
+                  })() : null}
                   </div>
                 </div>
               )}
