@@ -1,0 +1,207 @@
+@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800;900&display=swap');
+@import 'colors.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-900;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1 {
+    @apply text-5xl md:text-6xl font-extrabold tracking-tight;
+  }
+
+  h2 {
+    @apply text-4xl md:text-5xl font-bold tracking-tight;
+  }
+
+  h3 {
+    @apply text-3xl md:text-4xl font-bold;
+  }
+}
+
+@layer components {
+  /* 네이버 스포츠 스타일 카드 */
+  .sport-card {
+    @apply bg-white rounded-xl border border-gray-200 overflow-hidden
+           transition-all duration-200 hover:shadow-xl;
+    &:hover {
+      border-color: #7C3AED;
+    }
+  }
+
+  .sport-card-header {
+    @apply px-6 py-4 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100;
+  }
+
+  .sport-card-body {
+    @apply p-6;
+  }
+
+  /* 선수 카드 */
+  .player-card {
+    @apply bg-white rounded-xl border border-gray-200 overflow-hidden
+           transition-all duration-200 hover:shadow-xl hover:-translate-y-1;
+  }
+
+  .player-photo {
+    @apply w-24 h-24 rounded-xl flex items-center justify-center overflow-hidden;
+    background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+  }
+
+  /* 통계 박스 */
+  .stat-container {
+    @apply grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3;
+  }
+
+  .stat-item {
+    @apply bg-gray-50 rounded-lg p-3 sm:p-4 text-center hover:bg-gray-100 transition-colors;
+  }
+
+  .stat-number {
+    @apply text-2xl sm:text-3xl font-bold text-gray-900 mb-1;
+  }
+
+  .stat-label {
+    @apply text-xs sm:text-sm text-gray-600 font-medium;
+  }
+
+  /* 버튼 스타일 */
+  .nav-button {
+    @apply px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base
+           transition-all duration-200 active:scale-95;
+  }
+
+  .nav-button-active {
+    background: linear-gradient(135deg, #7C3AED 0%, #DC2626 100%);
+    @apply text-white shadow-lg;
+  }
+
+  .nav-button-inactive {
+    @apply bg-white text-gray-700 hover:bg-gray-50 border border-gray-200;
+  }
+
+  /* 테이블 스타일 */
+  .data-table {
+    @apply w-full bg-white rounded-xl overflow-hidden border border-gray-200;
+  }
+
+  .data-table-header {
+    @apply bg-gray-50 border-b border-gray-200;
+  }
+
+  .data-table-row {
+    @apply border-b border-gray-100 hover:bg-gray-50 transition-colors;
+  }
+
+  .data-table-cell {
+    @apply px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-base;
+  }
+
+  /* 라이브 인디케이터 */
+  .live-indicator {
+    background: linear-gradient(135deg, #DC2626 0%, #F59E0B 100%);
+    @apply inline-flex items-center gap-2 px-3 py-1 text-white 
+           rounded-full text-sm font-bold animate-pulse shadow-lg;
+  }
+
+  .live-dot {
+    @apply w-2 h-2 bg-white rounded-full animate-ping;
+  }
+
+  /* 팀 로고 플레이스홀더 */
+  .team-logo {
+    @apply w-12 h-12 rounded-lg bg-gradient-to-br flex items-center justify-center
+           text-white font-bold text-lg;
+  }
+
+  .team-logo-large {
+    @apply w-16 h-16 rounded-xl bg-gradient-to-br flex items-center justify-center
+           text-white font-bold text-2xl;
+  }
+
+  /* 섹션 타이틀 */
+  .section-title {
+    @apply text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6;
+  }
+
+  .section-subtitle {
+    @apply text-lg sm:text-xl font-semibold text-gray-700 mb-3 sm:mb-4;
+  }
+
+  /* 태그 */
+  .tag {
+    @apply inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium;
+  }
+
+  .tag-blue {
+    background: linear-gradient(135deg, #EDE9FE 0%, #FEE2E2 100%);
+    @apply text-purple-700 font-semibold;
+  }
+
+  .tag-green {
+    @apply bg-green-100 text-green-700;
+  }
+
+  .tag-gray {
+    @apply bg-gray-100 text-gray-700;
+  }
+
+  /* 경기 스코어 */
+  .score-display {
+    @apply text-3xl sm:text-4xl font-bold text-gray-900;
+  }
+
+  .score-team {
+    @apply text-base sm:text-lg font-semibold text-gray-700;
+  }
+}
+
+/* 스크롤바 스타일링 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+@media (min-width: 640px) {
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 rounded-full;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-400 rounded-full hover:bg-gray-500;
+}
+
+/* 애니메이션 */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
+}

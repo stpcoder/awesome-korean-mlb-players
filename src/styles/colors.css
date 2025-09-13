@@ -1,0 +1,50 @@
+/* K-Sports Star Premium Color Palette */
+:root {
+  /* Korean Heritage Colors - Modern Interpretation */
+  --primary-red: #DC2626;      /* Modern Korean Red */
+  --primary-blue: #1E40AF;     /* Deep Korean Blue */
+  --accent-gold: #F59E0B;      /* Premium Gold */
+  --accent-emerald: #10B981;   /* Success Green */
+  
+  /* Gradient Colors */
+  --gradient-start: #7C3AED;   /* Purple */
+  --gradient-mid: #DC2626;     /* Red */
+  --gradient-end: #F59E0B;     /* Gold */
+  
+  /* Dark Mode Premium */
+  --dark-navy: #0F172A;         /* Premium Navy */
+  --dark-slate: #1E293B;        /* Rich Slate */
+  
+  /* Neutral Palette */
+  --gray-50: #F8FAFC;
+  --gray-100: #F1F5F9;
+  --gray-200: #E2E8F0;
+  --gray-300: #CBD5E1;
+  --gray-400: #94A3B8;
+  --gray-500: #64748B;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1E293B;
+  --gray-900: #0F172A;
+}
+
+/* Custom gradient classes */
+.gradient-premium {
+  background: linear-gradient(135deg, #7C3AED 0%, #DC2626 50%, #F59E0B 100%);
+}
+
+.gradient-korean {
+  background: linear-gradient(135deg, #1E40AF 0%, #DC2626 100%);
+}
+
+.gradient-gold {
+  background: linear-gradient(135deg, #F59E0B 0%, #EF4444 100%);
+}
+
+.gradient-emerald {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+}
+
+.gradient-dark {
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+}
