@@ -413,26 +413,28 @@ class MLBService {
   // 실시간 경기 정보
   async getGameLiveFeed(gamePk: number) {
     try {
-      // v1.1 API 사용
+      // v1 API 사용
       logger.log('[getGameLiveFeed] Fetching game data for:', gamePk);
       const apiUrl = getApiUrl(`/game/${gamePk}/feed/live`);
       logger.log('[getGameLiveFeed] API URL:', apiUrl);
       const response = await fetch(apiUrl);
       
       if (!response.ok) {
-        logger.warn(`[getGameLiveFeed] Game ${gamePk} not found (status: ${response.status}), trying v1 API...`);
-        // v1 API fallback
-        const v1Response = await fetch(getApiUrl(`/game/${gamePk}/feed/live`));
-        if (!v1Response.ok) {
-          logger.error(`Game ${gamePk} not found in both v1.1 and v1 APIs`);
-          return null;
-        }
-        const v1Data = await v1Response.json();
-        return v1Data;
+        logger.error(`[getGameLiveFeed] Failed to fetch game ${gamePk}, status: ${response.status}`);
+        // 응답 텍스트 확인
+        const text = await response.text();
+        logger.error('[getGameLiveFeed] Response text:', text.substring(0, 200));
+        return null;
       }
       
       const data = await response.json();
       logger.log('[getGameLiveFeed] Successfully fetched game data');
+      logger.debug('[getGameLiveFeed] Data structure:', {
+        hasLiveData: !!data.liveData,
+        hasBoxscore: !!data.liveData?.boxscore,
+        hasPlays: !!data.liveData?.plays,
+        hasGameData: !!data.gameData
+      });
       return data;
     } catch (error) {
       logger.error(`[getGameLiveFeed] Error fetching game ${gamePk}:`, error);
@@ -503,22 +505,28 @@ class MLBService {
   async getKoreanPlayersInGame(gamePk: number, playerIds: number[]): Promise<any[]> {
     try {
       logger.log('[getKoreanPlayersInGame] Starting with gamePk:', gamePk, 'playerIds:', playerIds);
-      const gameData = await this.getGameLiveFeed(gamePk);
-      if (!gameData) {
-        logger.log('[getKoreanPlayersInGame] No game data found for gamePk:', gamePk);
+      
+      // 직접 boxscore API 호출 (더 안정적)
+      const boxscoreUrl = getApiUrl(`/game/${gamePk}/boxscore`);
+      logger.log('[getKoreanPlayersInGame] Fetching boxscore from:', boxscoreUrl);
+      
+      const boxscoreResponse = await fetch(boxscoreUrl);
+      if (!boxscoreResponse.ok) {
+        logger.error('[getKoreanPlayersInGame] Failed to fetch boxscore:', boxscoreResponse.status);
         return [];
       }
-      logger.log('[getKoreanPlayersInGame] Game data fetched successfully');
       
-      const boxscore = gameData.liveData?.boxscore;
-      if (!boxscore) {
-        logger.log('No boxscore data found');
+      const boxscoreData = await boxscoreResponse.json();
+      const boxscore = boxscoreData;
+      
+      if (!boxscore.teams) {
+        logger.error('[getKoreanPlayersInGame] No teams data in boxscore');
         return [];
       }
       
       const playersInGame = [];
-      logger.log('Looking for Korean players:', playerIds);
-      logger.log('Boxscore teams:', Object.keys(boxscore.teams));
+      logger.log('[getKoreanPlayersInGame] Looking for Korean players:', playerIds);
+      logger.log('[getKoreanPlayersInGame] Teams in boxscore:', Object.keys(boxscore.teams));
       
       // 홈팀/원정팀 선수 명단에서 한국 선수 찾기
       for (const teamKey of ['home', 'away']) {
@@ -560,8 +568,8 @@ class MLBService {
             
             // 실제 팀 이름 가져오기
             const actualTeamName = teamKey === 'home' 
-              ? gameData.gameData?.teams?.home?.name || boxscore.teams.home.team?.name || '홈'
-              : gameData.gameData?.teams?.away?.name || boxscore.teams.away.team?.name || '원정';
+              ? boxscore.teams.home.team?.name || '홈'
+              : boxscore.teams.away.team?.name || '원정';
             
             playersInGame.push({
               playerId: id,
@@ -626,12 +634,15 @@ class MLBService {
       
       // 각 선수의 이닝별 기록 가져오기
       for (const player of playersInGame) {
+        logger.log(`[getKoreanPlayersInGame] Getting inning stats for ${player.playerName} (${player.playerId})`);
         if (player.played && player.batting) {
-          (player as any).inningStats = await this.getPlayerInningStats(gamePk, player.playerId);
+          const inningStats = await this.getPlayerInningStats(gamePk, player.playerId);
+          logger.log(`[getKoreanPlayersInGame] Inning stats for ${player.playerName}:`, inningStats);
+          (player as any).inningStats = inningStats;
         }
       }
       
-      logger.log('Found players in game with inning stats:', playersInGame);
+      logger.log('[getKoreanPlayersInGame] Final players in game with inning stats:', playersInGame);
       return playersInGame;
     } catch (error) {
       logger.error(`Error fetching Korean players in game ${gamePk}:`, error);
