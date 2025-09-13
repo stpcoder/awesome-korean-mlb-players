@@ -2,6 +2,8 @@
 
 > 해외에서 활약하는 한국인 스포츠 스타들의 실시간 경기 기록과 일정을 한눈에 보는 웹 애플리케이션
 
+🔗 **라이브 데모**: [Vercel에서 배포 예정]
+
 ## 🌟 주요 기능
 
 ### 🏠 메인 화면
@@ -47,8 +49,8 @@
 ### 설치
 ```bash
 # 저장소 클론
-git clone https://github.com/yourusername/k-sports-star.git
-cd k-sports-star
+git clone https://github.com/stpcoder/awesome-korean-mlb-players.git
+cd awesome-korean-mlb-players
 
 # 의존성 설치
 npm install
@@ -68,6 +70,29 @@ npm run preview
 
 ### 환경 변수
 현재 별도의 환경 변수 설정은 필요하지 않습니다. MLB API는 공개 API를 사용합니다.
+
+## 🚀 Vercel 배포
+
+### 자동 배포 (권장)
+1. [Vercel](https://vercel.com)에 GitHub 계정으로 로그인
+2. "Import Project" 클릭
+3. GitHub 저장소 `stpcoder/awesome-korean-mlb-players` 선택
+4. 프로젝트 설정은 자동으로 감지됨 (Vite 프레임워크)
+5. "Deploy" 클릭
+
+### 수동 배포
+```bash
+# Vercel CLI 설치
+npm i -g vercel
+
+# 배포
+vercel
+
+# 프로덕션 배포
+vercel --prod
+```
+
+배포 후 `https://[프로젝트명].vercel.app` 형태의 URL이 생성됩니다.
 
 ## 📁 프로젝트 구조
 
