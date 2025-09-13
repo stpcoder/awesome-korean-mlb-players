@@ -422,7 +422,7 @@ class MLBService {
   }
 
   // 선수 최근 경기 기록 가져오기 (메이저/마이너 모두 지원)
-  async getPlayerRecentGames(playerId: number, limit: number = 5, daysBack: number = 30, sportId?: number) {
+  async getPlayerRecentGames(playerId: number, limit: number = 5, _daysBack: number = 30, sportId?: number): Promise<any[]> {
     try {
       const today = new Date();
       const currentYear = today.getFullYear();
@@ -603,7 +603,7 @@ class MLBService {
       // 각 선수의 이닝별 기록 가져오기
       for (const player of playersInGame) {
         if (player.played && player.batting) {
-          player.inningStats = await this.getPlayerInningStats(gamePk, player.playerId);
+          (player as any).inningStats = await this.getPlayerInningStats(gamePk, player.playerId);
         }
       }
       
@@ -691,7 +691,7 @@ class MLBService {
       });
       
       // 배열로 변환하여 반환
-      return Object.entries(inningDetails).map(([key, value]) => ({
+      return Object.entries(inningDetails).map(([key, value]: [string, any]) => ({
         inningLabel: key,
         ...value
       }));
@@ -807,7 +807,6 @@ class MLBService {
         .filter((play: any) => play.matchup?.batter?.id === playerId)
         .map((play: any) => {
           // 결과를 한국어로 변환
-          let koreanResult = play.result.description;
           const event = play.result.event;
           
           // 주요 이벤트 한국어 변환

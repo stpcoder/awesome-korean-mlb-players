@@ -173,14 +173,14 @@ export const MLBPlayerDetail: React.FC = () => {
                   <p className="opacity-75 text-xs sm:text-sm mb-1">팀</p>
                   <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
                     <img 
-                      src={mlbService.getTeamLogoUrl(playerInfo.teamId)} 
+                      src={mlbService.getTeamLogoUrl(playerInfo.teamId || 0)} 
                       alt={playerInfo.team}
                       className="w-5 h-5 sm:w-6 sm:h-6"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
                       }}
                     />
-                    <p className="font-semibold text-sm sm:text-lg">{getKoreanTeamName(playerInfo.team)}</p>
+                    <p className="font-semibold text-sm sm:text-lg">{getKoreanTeamName(playerInfo.team || '')}</p>
                   </div>
                 </div>
                 <div>

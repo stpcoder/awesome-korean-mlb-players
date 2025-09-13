@@ -141,7 +141,7 @@ export const MLBPlayerCard: React.FC<MLBPlayerCardProps> = ({ playerInfo }) => {
               
               // 투수와 타자 구분하여 기록 표시
               let mainStats = [];
-              let displayStats = null;
+              let displayStats: any = null;
               
               if (isPitcher || (isTwoWayPlayer && stat?.inningsPitched)) {
                 // 투수 기록 처리 - 자책점과 기타 기록 분리
@@ -162,7 +162,6 @@ export const MLBPlayerCard: React.FC<MLBPlayerCardProps> = ({ playerInfo }) => {
                 }
                 
                 // 투수 결과 표시 (승/패/세이브/홀드)
-                const results = [];
                 let resultBadgeColor = '';
                 let resultBadgeText = '';
                 
@@ -255,7 +254,7 @@ export const MLBPlayerCard: React.FC<MLBPlayerCardProps> = ({ playerInfo }) => {
                   {/* 기록 표시 */}
                   <div className="flex flex-col gap-1">
                     {/* TWP 선수의 투수 기록 */}
-                    {displayStats.isTwoWayPlayer && displayStats.badge && (
+                    {displayStats && displayStats.isTwoWayPlayer && displayStats.badge && (
                       <div className="flex items-center justify-between">
                         <div className="flex items-baseline gap-1">
                           <span className="text-xs font-semibold text-gray-500">투수:</span>
@@ -280,13 +279,13 @@ export const MLBPlayerCard: React.FC<MLBPlayerCardProps> = ({ playerInfo }) => {
                     )}
                     
                     {/* TWP 선수의 타자 기록 또는 일반 기록 */}
-                    {displayStats.battingMain || (!displayStats.isTwoWayPlayer && displayStats.main) ? (
+                    {displayStats && (displayStats.battingMain || (!displayStats.isTwoWayPlayer && displayStats.main)) ? (
                       <div className="flex items-center justify-between">
                         <div className="flex items-baseline gap-1">
-                          {displayStats.isTwoWayPlayer && (
+                          {displayStats && displayStats.isTwoWayPlayer && (
                             <span className="text-xs font-semibold text-gray-500">타자:</span>
                           )}
-                          {isPitcher && !displayStats.isTwoWayPlayer ? (
+                          {isPitcher && displayStats && !displayStats.isTwoWayPlayer ? (
                         <>
                           {/* 투수: 자책점 강조, 나머지 회색 */}
                           <span className="text-sm sm:text-base md:text-lg font-bold text-gray-900">
@@ -308,7 +307,7 @@ export const MLBPlayerCard: React.FC<MLBPlayerCardProps> = ({ playerInfo }) => {
                           <span className="text-sm sm:text-base md:text-lg font-bold text-gray-900">
                             {displayStats.main}
                           </span>
-                          {displayStats.extra && (
+                          {displayStats?.extra && (
                             <span className="text-xs sm:text-sm md:text-base text-gray-600">
                               {displayStats.extra}
                             </span>
@@ -318,16 +317,16 @@ export const MLBPlayerCard: React.FC<MLBPlayerCardProps> = ({ playerInfo }) => {
                         </div>
                         
                         {/* 배지 표시 (TWP가 아닌 경우만) */}
-                        {!displayStats.isTwoWayPlayer && (
+                        {!displayStats?.isTwoWayPlayer && (
                           isPitcher ? (
                             <div className="flex items-center gap-1 text-white px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full shadow-md" style={{ background: 'linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%)' }}>
-                              <span className="text-xs sm:text-sm font-bold">{displayStats.badge}</span>
+                              <span className="text-xs sm:text-sm font-bold">{displayStats?.badge}</span>
                             </div>
                           ) : (
                             <div className="flex items-center gap-0.5 sm:gap-1 text-white px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full shadow-md" style={{ background: 'linear-gradient(135deg, #F59E0B 0%, #DC2626 100%)' }}>
-                              <span className="text-xs sm:text-sm font-bold">{displayStats.hits}</span>
+                              <span className="text-xs sm:text-sm font-bold">{displayStats?.hits}</span>
                               <span className="text-[10px] sm:text-xs opacity-80">for</span>
-                              <span className="text-xs sm:text-sm font-bold">{displayStats.atBats}</span>
+                              <span className="text-xs sm:text-sm font-bold">{displayStats?.atBats}</span>
                             </div>
                           )
                         )}

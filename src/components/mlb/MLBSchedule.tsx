@@ -88,7 +88,7 @@ export const MLBSchedule: React.FC = () => {
           daysToShow,
           player.sportId
         );
-        recentGames.forEach(game => {
+        recentGames.forEach((game: any) => {
           if (game.gamePk) {
             playerGamePks.add(game.gamePk);
           }
@@ -335,8 +335,6 @@ export const MLBSchedule: React.FC = () => {
             
             const ourPlayers = [...homePlayers, ...awayPlayers];
             const isHome = homePlayers.length > 0;
-            const opponent = isHome ? game.teams.away.team.name : game.teams.home.team.name;
-            const opponentId = isHome ? game.teams.away.team.id : game.teams.home.team.id;
             
             return (
               <div key={game.gamePk} className="sport-card overflow-hidden">

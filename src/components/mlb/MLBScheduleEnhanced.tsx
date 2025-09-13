@@ -200,8 +200,8 @@ export const MLBScheduleEnhanced: React.FC = () => {
       
       // 날짜 범위 계산
       const today = new Date();
-      let startDate: string;
-      let endDate: string;
+      let startDate: string = '';
+      let endDate: string = '';
       
       if (direction === 'initial') {
         // 초기 로드: 어제부터 7일 후까지 (오늘 포함)
@@ -239,7 +239,7 @@ export const MLBScheduleEnhanced: React.FC = () => {
       // MLB API 직접 호출
       const sportIds = '1,11,12,13,14,15,16'; // 모든 레벨 포함
       let url = `https://statsapi.mlb.com/api/v1/schedule?sportId=${sportIds}&startDate=${startDate}&endDate=${endDate}`;
-      if (teamIds.length > 0) {
+      if (teamIds && teamIds.length > 0) {
         url += `&teamId=${teamIds.join(',')}`;
       }
       
