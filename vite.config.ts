@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/awesome-korean-mlb-players/',
+  base: '/',  // Vercel 배포용 (루트 경로)
   server: {
     cors: true,
     proxy: {
